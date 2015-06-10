@@ -24,6 +24,9 @@ if(!file.exists("activity.csv")) {
 }
 ##Load the data (i.e. read.csv())
 rawactivity<-read.csv("activity.csv")
+
+# once we read in the raw data, we won't need it again
+unlink("activity.csv")
 ```
 
 2. Process/transform the data (if necessary) into a format suitable for your analysis
@@ -68,7 +71,7 @@ str(activity)
 
 For this part of the assignment, you can ignore the missing values in the dataset.
 
-First we'll strip out the missing values from the dataset. And then tke a sum over all observations for each date.
+First we'll strip out the missing values from the dataset. And then take a sum over all observations for each date.
 
 
 
@@ -185,7 +188,7 @@ stepsbyinterval[which.max(stepsbyinterval$steps),]
 ## 104      835 206.1698
 ```
 
-The 104th 5-minute interval, starting at minute 835 of the day has the maximum nuber of steps (206.17)
+The 104th 5-minute interval, starting at '835' of the day (08:35) has the maximum nuber of steps (206.17)
 
 To highlight that result, add it as crosslines on the graph.
 
@@ -266,25 +269,27 @@ for (i in 1:nrow(activity)){
         # if there are multiple na's we should set them all equal
         # might as well fill them all in while we're here
         activity$steps[i:j-1]=interpolation
-        print(paste("NAs in rows ",i,":",j-1," have been set to ",interpolation))
+        print(paste("NAs in rows",i,":",j-1," (",(j-i)*5/60,"hours long ) have been set to",interpolation))
     }
 }
 ```
 
 ```
-## [1] "NAs in rows  1 : 288  have been set to  0"
-## [1] "NAs in rows  2017 : 2304  have been set to  0"
-## [1] "NAs in rows  8929 : 9216  have been set to  0"
-## [1] "NAs in rows  9793 : 10080  have been set to  0"
-## [1] "NAs in rows  11233 : 11808  have been set to  0"
-## [1] "NAs in rows  12673 : 12960  have been set to  0"
-## [1] "NAs in rows  17281 : 17568  have been set to  0"
+## [1] "NAs in rows 1 : 288  ( 24 hours long ) have been set to 0"
+## [1] "NAs in rows 2017 : 2304  ( 24 hours long ) have been set to 0"
+## [1] "NAs in rows 8929 : 9216  ( 24 hours long ) have been set to 0"
+## [1] "NAs in rows 9793 : 10080  ( 24 hours long ) have been set to 0"
+## [1] "NAs in rows 11233 : 11808  ( 48 hours long ) have been set to 0"
+## [1] "NAs in rows 12673 : 12960  ( 24 hours long ) have been set to 0"
+## [1] "NAs in rows 17281 : 17568  ( 24 hours long ) have been set to 0"
 ```
 
 ```r
 # clean up
 rm (i,j,interpolation)
 ```
+
+Examining the raw activity data that is being imputed, we see that the several long NA intervals (each being one or two full days) are all bounded by intervals with zero steps. Thus all the NAs are actually set to zero. Since NAs occur in full day sequences, it may have made more sense to substitue the value for each NA interval with the average value for that interval from all other days. However, this might skew the results when trying to compare weekdays to weekends later: a weekend day should potentialy be replaced with the average for other weekend days, etc. Then again, if there are more weekend days with NAs than weekday days, then the average for weekend days will be drawn down in response, or vice versa. Since there are full days of missing data, it actually makes more sense to simply omit them from the analysis as we did in the first step.
 
 4. Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
 
@@ -352,7 +357,7 @@ rm(stepsbydate, mean_val, median_val)
 
 The histogram is significantly changed, with a much larger frequency of days in the 0-5000 step range. The mean and median values have separated and both differ significantly from the estimates from the first part of the assignment. The mean has shifted further down than the median has. 
 
-The impact of imputing missing data using the method I chose causes all of the estimates to be significantly lower. Examining the raw activity data, it is clear that this happens because the NA intervals are all bounded by intervals with zero steps. Thus all the NAs are actually set to zero.
+The impact of imputing missing data using the method I chose causes all of the estimates to be significantly lower.
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
@@ -401,13 +406,49 @@ qplot(interval, steps, data=stepsbyintervalandday, geom=c("line"), xlab="Interva
 
 ![plot of chunk unnamed-chunk-23](figure/unnamed-chunk-23-1.png) 
 
-The plot shows that there is significantly more activity early in the day on the weeked, and significantly more in the middle of the day on the weekend.
+```r
+# cleanup
+rm(activity)
+rm(stepsbyintervalandday)
+```
+
+The plot shows that there is significantly more activity early in the day on the weekday, and significantly more in the middle of the day on the weekend. However, as mentioned above, using the 'imputed' data may actually skew the results, and we should probably compare the graphs when the NA values are omitted instead.
+
+We expect the shapes of the graphs to remain similar but the maximum values should change. The difference between the weekend and weekday should be closer to the real data.
+
+So, let's go back to the raw data, omit the NAs and rerun these last two graphs.
+
+
+```r
+##Process/transform the data (if necessary) into a format suitable for your analysis
+# convert 'date' from charater type to date type
+activity<-na.omit(rawactivity)
+activity$date<-as.Date(activity$date)
+# the date column is actually string data and we need to convert it to date to use weekdays()
+# then we need to convert the "weekday"/"weekend" strings back into factors
+activity$day<-as.factor(ifelse(weekdays(activity$date) == "Sunday" | weekdays(activity$date) == "Saturday","weekend", "weekday"))
+stepsbyintervalandday <- aggregate(steps ~ interval+day, activity, mean)
+
+# conditional install and load the package
+if (! "ggplot2" %in% rownames(installed.packages())) install.packages("ggplot2")
+library(ggplot2)
+
+# create two plots in a single column - using the day type as a facet
+qplot(interval, steps, data=stepsbyintervalandday, geom=c("line"), xlab="Interval", 
+      ylab="Number of steps", main="") + facet_wrap(~ day, ncol=1)
+```
+
+![plot of chunk unnamed-chunk-24](figure/unnamed-chunk-24-1.png) 
+
+```r
+rm(activity)
+rm(stepsbyintervalandday)
+```
+
+As it turns out, the maximums of both graphs are only slightly greater, and not significantly different from the previous versions. 
 
 
 ```r
 # final cleanup
-rm(activity)
-rm(stepsbyintervalandday)
 rm(rawactivity)
-unlink("activity.csv")
 ```
