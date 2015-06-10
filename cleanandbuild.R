@@ -1,0 +1,6 @@
+unlink("PA1_template.html")
+unlink("PA1_template_files", recursive=TRUE)
+unlink("figure", recursive=TRUE)
+unlink("PA1_template.md")
+library(knitr)
+knit2html("PA1_template.Rmd")
