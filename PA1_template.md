@@ -1,4 +1,9 @@
-# Reproducible Research Peer Assessment 1
+---
+title: "Reproducible Research Peer Assessment 1"
+output: 
+  html_document:
+    keep_md: true
+---
 
 ## Loading and preprocessing the data
 
@@ -41,7 +46,7 @@ hist(stepsbydate$steps, main="Histogram of total number\nof steps per day",
      xlab="Total number of steps in a day", ylab="Number of days")
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-3-1.png) 
+![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-1.png) 
 
 2. Calculate and report the mean and median total number of steps taken per day
 
@@ -88,7 +93,7 @@ plot(stepsbyinterval$steps, type = "l", main="Average number of steps",
      xlab="Interval", ylab="Number of steps")
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-7-1.png) 
+![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-7-1.png) 
 
 2. Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
@@ -136,7 +141,7 @@ sum(!complete.cases(activity))
 
 ```r
 # save our raw data, and manipulate the data in place
-rawactivity<-activity
+#rawactivity<-activity
 # fill in the missing values by averaging those around it 
 for (i in 1:nrow(activity)){
     if(is.na(activity$steps[i])){
@@ -161,6 +166,7 @@ for (i in 1:nrow(activity)){
         }
     }
 }
+rm (i,j,k,interpolation)
 ```
 
 4. Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
@@ -179,7 +185,7 @@ hist(stepsbydate$steps, main="Histogram of total (imputed) number\nof steps per 
      xlab="Total number of steps in a day", ylab="Number of days")
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-13-1.png) 
+![plot of chunk unnamed-chunk-13](figure/unnamed-chunk-13-1.png) 
 
 
 ```r
@@ -234,9 +240,12 @@ qplot(interval, steps, data=stepsbyintervalandday, geom=c("line"), xlab="Interva
       ylab="Number of steps", main="") + facet_wrap(~ day, ncol=1)
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-17-1.png) 
+![plot of chunk unnamed-chunk-17](figure/unnamed-chunk-17-1.png) 
 
 
 ```r
+# final cleanup
+rm(activity)
 rm(stepsbyintervalandday)
+unlink("activity.csv")
 ```
