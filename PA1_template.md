@@ -1,9 +1,4 @@
----
-title: "Reproducible Research Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research Peer Assessment 1
 
 ## Loading and preprocessing the data
 
@@ -11,7 +6,8 @@ Show any code that is needed to
 
 1. Load the data (i.e. read.csv())
 
-```{r}
+
+```r
 # Conditionally download and unzip the data file required
 if(!file.exists("activity.zip")) {
     download.file("https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip","activity.zip", "curl")
@@ -29,7 +25,8 @@ activity<-read.csv("activity.csv")
 
 For this part of the assignment, you can ignore the missing values in the dataset.
 
-```{r}
+
+```r
 ##Process/transform the data (if necessary) into a format suitable for your analysis
 ###Use aggragate to sum over the number of steps for each date, omitting incomplete observations
 stepsbydate <- aggregate(steps ~ date, na.omit(activity), sum)
@@ -37,23 +34,39 @@ stepsbydate <- aggregate(steps ~ date, na.omit(activity), sum)
 
 1. Make a histogram of the total number of steps taken each day
 
-```{r}
+
+```r
 ##Make a histogram of the total number of steps taken each day
 hist(stepsbydate$steps, main="Histogram of total number\nof steps per day", 
      xlab="Total number of steps in a day", ylab="Number of days")
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-3-1.png) 
+
 2. Calculate and report the mean and median total number of steps taken per day
 
-```{r}
+
+```r
 ##Calculate and report the mean and median total number of steps taken per day
 mean(stepsbydate$steps)
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 median(stepsbydate$steps)
+```
+
+```
+## [1] 10765
 ```
 
 The mean and median total number of steps taken per day are 10766.19 and 10765 steps respectively.
 
-```{r}
+
+```r
 # free memory
 rm(stepsbydate)
 ```
@@ -63,26 +76,37 @@ rm(stepsbydate)
 1. Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
 
 
-```{r}
+
+```r
 stepsbyinterval <- aggregate(steps ~ interval, na.omit(activity), mean)
 ```
 
-```{r}
+
+```r
 ##Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
 plot(stepsbyinterval$steps, type = "l", main="Average number of steps", 
      xlab="Interval", ylab="Number of steps")
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-7-1.png) 
+
 2. Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
-```{r}
+
+```r
 # Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 stepsbyinterval[which.max(stepsbyinterval$steps),]
 ```
 
+```
+##     interval    steps
+## 104      835 206.1698
+```
+
 The 104th interval, starting at minute 835 of the day has the maximum nuber of steps (206.2)
 
-```{r}
+
+```r
 # free memory
 rm(stepsbyinterval)
 ```
@@ -95,8 +119,13 @@ calculations or summaries of the data.
 1. Calculate and report the total number of missing values in the dataset
 (i.e. the total number of rows with NAs)
 
-```{r}
+
+```r
 sum(!complete.cases(activity))
+```
+
+```
+## [1] 2304
 ```
 
 2. Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
@@ -104,9 +133,10 @@ sum(!complete.cases(activity))
 
 3. Create a new dataset that is equal to the original dataset but with the missing data filled in.
 
-```{r}
+
+```r
 # save our raw data, and manipulate the data in place
-#rawactivity<-activity
+rawactivity<-activity
 # fill in the missing values by averaging those around it 
 for (i in 1:nrow(activity)){
     if(is.na(activity$steps[i])){
@@ -131,30 +161,46 @@ for (i in 1:nrow(activity)){
         }
     }
 }
-rm (i,j,k,interpolation)
 ```
 
 4. Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
 
-```{r}
+
+```r
 ##Process/transform the data (if necessary) into a format suitable for your analysis
 ###Use aggragate to sum over the number of steps for each date, note that there will be no omitted observations
 stepsbydate <- aggregate(steps ~ date, activity, sum)
 ```
 
-```{r}
+
+```r
 ##Make a histogram of the total number of steps taken each day
 hist(stepsbydate$steps, main="Histogram of total (imputed) number\nof steps per day", 
      xlab="Total number of steps in a day", ylab="Number of days")
 ```
 
-```{r}
+![](PA1_template_files/figure-html/unnamed-chunk-13-1.png) 
+
+
+```r
 ##Calculate and report the mean and median total number of steps taken per day
 mean(stepsbydate$steps)
+```
+
+```
+## [1] 9354.23
+```
+
+```r
 median(stepsbydate$steps)
 ```
 
-```{r}
+```
+## [1] 10395
+```
+
+
+```r
 rm(stepsbydate)
 ```
 
@@ -166,7 +212,8 @@ For this part the weekdays() function may be of some help here. Use the dataset 
 
 1. Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.
 
-```{r}
+
+```r
 # the date column is actually string data and we need to convert it to date to use weekdays()
 # then we need to convert the "weekday"/"weekend" strings back into factors
 activity$day<-as.factor(ifelse(weekdays(as.Date(activity$date)) == "Sunday" | weekdays(as.Date(activity$date)) == "Saturday","weekend", "weekday"))
@@ -174,7 +221,8 @@ activity$day<-as.factor(ifelse(weekdays(as.Date(activity$date)) == "Sunday" | we
 
 2. Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). 
 
-```{r}
+
+```r
 # aggregate steps as interval to get average number of steps in an interval across day types
 stepsbyintervalandday <- aggregate(steps ~ interval+day, activity, mean)
 
@@ -186,9 +234,9 @@ qplot(interval, steps, data=stepsbyintervalandday, geom=c("line"), xlab="Interva
       ylab="Number of steps", main="") + facet_wrap(~ day, ncol=1)
 ```
 
-```{r}
-# final cleanup
-rm(activity)
+![](PA1_template_files/figure-html/unnamed-chunk-17-1.png) 
+
+
+```r
 rm(stepsbyintervalandday)
-unlink("activity.csv")
 ```
