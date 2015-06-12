@@ -9,7 +9,7 @@ output:
 
 Show any code that is needed to
 
-1. Load the data (i.e. read.csv())
+* Load the data (i.e. read.csv())
 
 Conditionally download the zip file (it also exists in the repo), and then conditionally unzip the file. The zip contains a single activity.csv file which is the data set we will be working with.
 
@@ -29,7 +29,7 @@ rawactivity<-read.csv("activity.csv")
 unlink("activity.csv")
 ```
 
-2. Process/transform the data (if necessary) into a format suitable for your analysis
+* Process/transform the data (if necessary) into a format suitable for your analysis
 
 The description of the dataset from the course website is as follows:
 
@@ -95,7 +95,7 @@ str(stepsbydate)
 ##  $ steps: int  126 11352 12116 13294 15420 11015 12811 9900 10304 17382 ...
 ```
 
-1. Make a histogram of the total number of steps taken each day
+* Make a histogram of the total number of steps taken each day
 
 
 ```r
@@ -106,7 +106,7 @@ hist(stepsbydate$steps, main="Histogram of total number\nof steps per day",
 
 ![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6-1.png) 
 
-2. Calculate and report the mean and median total number of steps taken per day
+* Calculate and report the mean and median total number of steps taken per day
 
 
 ```r
@@ -159,7 +159,7 @@ rm(stepsbydate, mean_val, median_val)
 
 ## What is the average daily activity pattern?
 
-1. Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
+* Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
 
 
 ```r
@@ -175,7 +175,7 @@ plot(stepsbyinterval$interval, stepsbyinterval$steps, type = "l", main="Average 
 
 ![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11-1.png) 
 
-2. Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
+* Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
 
 ```r
@@ -225,7 +225,7 @@ rm(max_interval)
 Note that there are a number of days/intervals where there are missing values (coded as NA). The presence of missing days may introduce bias into some
 calculations or summaries of the data.
 
-1. Calculate and report the total number of missing values in the dataset
+* Calculate and report the total number of missing values in the dataset
 (i.e. the total number of rows with NAs)
 
 
@@ -237,11 +237,11 @@ sum(!complete.cases(rawactivity))
 ## [1] 2304
 ```
 
-2. Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
+* Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
 
 We will be imputing the missing data by setting the value to the average of actual values near it. For example, if a single value is NA, we will average the values directly before and after it, if multiple NAs occur in sequence, the entire sequence will be replaced with the average of the real values directly before and after it. In the case where the NAs occur at the beginning or end of the dataset, the single value directly after or before them (respectively, will be used.)
 
-3. Create a new dataset that is equal to the original dataset but with the missing data filled in.
+* Create a new dataset that is equal to the original dataset but with the missing data filled in.
 
 
 ```r
@@ -291,7 +291,7 @@ rm (i,j,interpolation)
 
 Examining the raw activity data that is being imputed, we see that the several long NA intervals (each being one or two full days) are all bounded by intervals with zero steps. Thus all the NAs are actually set to zero. Since NAs occur in full day sequences, it may have made more sense to substitue the value for each NA interval with the average value for that interval from all other days. However, this might skew the results when trying to compare weekdays to weekends later: a weekend day should potentialy be replaced with the average for other weekend days, etc. Then again, if there are more weekend days with NAs than weekday days, then the average for weekend days will be drawn down in response, or vice versa. Since there are full days of missing data, it actually makes more sense to simply omit them from the analysis as we did in the first step.
 
-4. Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
+* Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
 
 
 ```r
@@ -363,7 +363,7 @@ The impact of imputing missing data using the method I chose causes all of the e
 
 For this part the weekdays() function may be of some help here. Use the dataset with the filled-in missing values for this part.
 
-1. Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.
+* Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.
 
 
 ```r
@@ -387,7 +387,7 @@ str(activity)
 ##  $ day     : Factor w/ 2 levels "weekday","weekend": 1 1 1 1 1 1 1 1 1 1 ...
 ```
 
-2. Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). 
+* Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). 
 
 
 ```r
